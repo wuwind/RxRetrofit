@@ -20,6 +20,10 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+/**
+ * Created by Wuhf on 2016/3/24.
+ * Description ：
+ */
 public class RXRetrofitActivity extends Activity {
 
     private String TAG = "RXRetrofitActivity";
