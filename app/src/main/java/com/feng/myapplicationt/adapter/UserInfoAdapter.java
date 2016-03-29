@@ -1,5 +1,7 @@
 package com.feng.myapplicationt.adapter;
 
+import android.graphics.Bitmap;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.feng.myapplicationt.R;
 import com.feng.myapplicationt.model.UserBean;
 
@@ -30,12 +35,12 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.MyView
 
     public void addUser(UserBean bean) {
         datas.add(bean);
-        notifyItemInserted(datas.size()-1);
+        notifyItemInserted(datas.size() - 1);
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_info, null);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_design_user_info, parent, false);
         MyViewHolder vh = new MyViewHolder(view);
         return vh;
     }
@@ -51,8 +56,8 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.MyView
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.avatarUrl)
-        ImageView avatarUrl;
+        @Bind(R.id.ivImg)
+        ImageView ivImg;
         @Bind(R.id.longin)
         TextView longin;
         @Bind(R.id.reposUrl)
@@ -64,6 +69,27 @@ public class UserInfoAdapter extends RecyclerView.Adapter<UserInfoAdapter.MyView
         }
 
         public void bindTo(UserBean bean) {
+            Glide.with(ivImg.getContext())
+                    .load(bean.getAvatarUrl())
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            ivImg.setImageBitmap(resource);
+                            Palette.from(resource)
+                                    .generate(new Palette.PaletteAsyncListener() {
+                                        @Override
+                                        public void onGenerated(Palette palette) {
+                                            Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+                                            if (null != vibrantSwatch) {
+                                                longin.setBackgroundColor(vibrantSwatch.getRgb());
+                                                longin.setTextColor(vibrantSwatch.getTitleTextColor());
+                                            }
+                                        }
+                                    });
+                        }
+                    });
+
             longin.setText(bean.getLogin());
             reposUrl.setText(bean.getRepos_url());
         }
